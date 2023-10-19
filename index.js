@@ -48,6 +48,13 @@ async function run() {
         res.send(result);
     })
 
+    app.get('/brandProducts/:id', async (req, res) => {
+        const id = req.params.id;
+        const query = { _id : new ObjectId(id)};
+        const result = await brandProducts.findOne(query);
+        res.send(result);
+    })
+
     app.get('/cart', async (req, res) => {
         const cursor = myCartCollection.find();
         const result = await cursor.toArray();
@@ -57,7 +64,8 @@ async function run() {
 
     app.post('/addProduct', async (req, res) => {
         const product = req.body;
-        
+        const result = await brandProducts.insertOne(product)
+        res.send(result);
     })
 
     app.post('/cart', async (req, res) => {
@@ -65,6 +73,26 @@ async function run() {
         const result = await myCartCollection.insertOne(data);
         res.send(result)
         console.log(result);
+    })
+
+    app.put('/update/:id', async (req, res) => {
+        const id = req.params.id;
+        const data = req.body;
+
+        const filter = { _id : new ObjectId(id)};
+        const updateProduct = {
+            $set : {
+                name : data.name,
+                brand : data.brand,
+                type : data.type,
+                price : data.price,
+                rating : data.rating,
+                details : data.description,
+                img : data.img
+                }
+            }
+            const result = await brandProducts.updateOne(filter, updateProduct);
+            res.send(result);
     })
 
     app.delete('/delete/:id' , async (req, res) => {
