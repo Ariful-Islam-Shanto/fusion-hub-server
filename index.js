@@ -28,8 +28,64 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    // await client.connect();
+    await client.connect();
+    const database = client.db("StyleJunction");
+    const brandsCollection = database.collection("brandsCollection");
 
+
+    app.get('/brands', async (req, res) => {
+        const brands = brandsCollection.find();
+        const result = await brands.toArray();
+        // console.log(result);
+        res.send(result)
+    })
+
+    app.get('/products/:name', async (req, res) => {
+        const name = req.params.name;
+        console.log(name);
+        if(name === 'Gucci') {
+           const gucciCollection = database.collection('gucciCollection');
+           const products = gucciCollection.find();
+           const productsArr = await products.toArray();
+           console.log(productsArr);
+           res.send(productsArr)
+        }
+        else if(name === 'Addidas') {
+            const addidasCollection = database.collection('addidasCollection');
+           const products = addidasCollection.find();
+           const productsArr = await products.toArray();
+        //    console.log(productsArr);
+           res.send(productsArr)
+        }
+        else if(name === 'Zara') {
+            const zaraCollection = database.collection('zaraCollection');
+           const products = zaraCollection.find();
+           const productsArr = await products.toArray();
+           console.log(productsArr);
+           res.send(productsArr)
+        }
+        else if(name === 'H&M') {
+            const hAndCollection = database.collection('h&mCollection');
+           const products = hAndCollection.find();
+           const productsArr = await products.toArray();
+           console.log(productsArr);
+           res.send(productsArr)
+        }
+        else if(name === 'Nike') {
+            const nikeCollection = database.collection('nikeCollection');
+           const products = nikeCollection.find();
+           const productsArr = await products.toArray();
+           console.log(productsArr);
+           res.send(productsArr)
+        }
+        else if(name === "Levi's") {
+            const levisCollection = database.collection("levi'sCollection");
+           const products = levisCollection.find();
+           const productsArr = await products.toArray();
+           console.log(productsArr);
+           res.send(productsArr)
+        }
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
