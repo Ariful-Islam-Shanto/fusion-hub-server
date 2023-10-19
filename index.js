@@ -13,7 +13,7 @@ app.listen(port, () => {
 })
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion,  ObjectId } = require('mongodb');
 const uri = "mongodb+srv://mdarifulislam1077:anMk1M6h2l8Po6VG@cluster0.g3o7kaw.mongodb.net/?retryWrites=true&w=majority";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -31,6 +31,8 @@ async function run() {
     await client.connect();
     const database = client.db("StyleJunction");
     const brandsCollection = database.collection("brandsCollection");
+    const brandProducts = database.collection('brandProductsCollection');
+    const myCartCollection = database.collection('myCart');
 
 
     app.get('/brands', async (req, res) => {
@@ -40,53 +42,24 @@ async function run() {
         res.send(result)
     })
 
-    app.get('/products/:name', async (req, res) => {
-        const name = req.params.name;
-        console.log(name);
-        if(name === 'Gucci') {
-           const gucciCollection = database.collection('gucciCollection');
-           const products = gucciCollection.find();
-           const productsArr = await products.toArray();
-           console.log(productsArr);
-           res.send(productsArr)
-        }
-        else if(name === 'Addidas') {
-            const addidasCollection = database.collection('addidasCollection');
-           const products = addidasCollection.find();
-           const productsArr = await products.toArray();
-        //    console.log(productsArr);
-           res.send(productsArr)
-        }
-        else if(name === 'Zara') {
-            const zaraCollection = database.collection('zaraCollection');
-           const products = zaraCollection.find();
-           const productsArr = await products.toArray();
-           console.log(productsArr);
-           res.send(productsArr)
-        }
-        else if(name === 'H&M') {
-            const hAndCollection = database.collection('h&mCollection');
-           const products = hAndCollection.find();
-           const productsArr = await products.toArray();
-           console.log(productsArr);
-           res.send(productsArr)
-        }
-        else if(name === 'Nike') {
-            const nikeCollection = database.collection('nikeCollection');
-           const products = nikeCollection.find();
-           const productsArr = await products.toArray();
-           console.log(productsArr);
-           res.send(productsArr)
-        }
-        else if(name === "Levi's") {
-            const levisCollection = database.collection("levi'sCollection");
-           const products = levisCollection.find();
-           const productsArr = await products.toArray();
-           console.log(productsArr);
-           res.send(productsArr)
-        }
+    app.get('/brandProducts', async (req, res) => {
+        const products = brandProducts.find();
+        const result = await products.toArray();
+        res.send(result);
     })
 
+
+    app.post('/addProduct', async (req, res) => {
+        const product = req.body;
+        
+    })
+
+    app.post('/cart', async (req, res) => {
+        const data = req.body;
+        const result = await myCartCollection.insertOne(data);
+        res.send(result)
+        console.log(result);
+    })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
