@@ -3,7 +3,7 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 5000;
 
-
+require('dotenv').config();
 app.use(cors());
 app.use(express.json());
 
@@ -14,7 +14,7 @@ app.listen(port, () => {
 
 
 const { MongoClient, ServerApiVersion,  ObjectId } = require('mongodb');
-const uri = "mongodb+srv://mdarifulislam1077:anMk1M6h2l8Po6VG@cluster0.g3o7kaw.mongodb.net/?retryWrites=true&w=majority";
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.g3o7kaw.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -28,7 +28,8 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
+
     const database = client.db("StyleJunction");
     const brandsCollection = database.collection("brandsCollection");
     const brandProducts = database.collection('brandProductsCollection');
@@ -38,25 +39,44 @@ async function run() {
     app.get('/brands', async (req, res) => {
         const brands = brandsCollection.find();
         const result = await brands.toArray();
-        // console.log(result);
         res.send(result)
     })
 
-    app.get('/brandProducts', async (req, res) => {
-        const products = brandProducts.find();
+    app.get('/brands/:name', async (req, res) => {
+        const brandName = req.params.name;
+        const query = { name : brandName};
+        const result = await brandsCollection.findOne(query);
+        res.send(result);
+        // console.log(result);
+    })
+
+    app.get('/brandProducts/:name', async (req, res) => {
+        const brandName = req.params.name;
+        const query = { brand : brandName};
+        const products = brandProducts.find(query);
         const result = await products.toArray();
         res.send(result);
     })
 
-    app.get('/brandProducts/:id', async (req, res) => {
+    app.get('/brandProducts', async (req, res) => {
+        const cursor = brandProducts.find();
+        const result = await cursor.toArray();
+        res.send(result);
+    })
+
+    app.get('/brandProductss/:id', async (req, res) => {
+        console.log('hello');
         const id = req.params.id;
         const query = { _id : new ObjectId(id)};
         const result = await brandProducts.findOne(query);
         res.send(result);
+        console.log(id);
     })
 
-    app.get('/cart', async (req, res) => {
-        const cursor = myCartCollection.find();
+    app.get('/cart/:email', async (req, res) => {
+        const findEmail = req.params.email;
+        const query = { email : findEmail };
+        const cursor = myCartCollection.find(query);
         const result = await cursor.toArray();
         res.send(result);
     })
